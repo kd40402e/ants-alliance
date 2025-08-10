@@ -21,9 +21,7 @@ export default function useSummary(enabled: boolean) {
 
     const unsubs = ROLES.map((r: Role) =>
       onSnapshot(query(collection(db, "players"), where("role", "==", r)), (snap) => {
-        let week = 0;
-        let all = 0;
-        let count = 0;
+        let week = 0, all = 0, count = 0;
 
         snap.forEach((doc) => {
           const p = doc.data() as Omit<Player, "id">;
