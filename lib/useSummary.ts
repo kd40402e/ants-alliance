@@ -22,14 +22,12 @@ export default function useSummary(enabled: boolean) {
     const unsubs = ROLES.map((r: Role) =>
       onSnapshot(query(collection(db, "players"), where("role", "==", r)), (snap) => {
         let week = 0, all = 0, count = 0;
-
         snap.forEach((doc) => {
           const p = doc.data() as Omit<Player, "id">;
           week += Number(p.weekTotal ?? 0);
           all  += Number(p.allTime  ?? 0);
           count += 1;
         });
-
         setSummary((prev) => ({ ...prev, [r]: { week, all, count } }));
       })
     );
