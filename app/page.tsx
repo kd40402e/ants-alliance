@@ -30,7 +30,7 @@ export default function Page() {
     return () => unsubscribeAuth();
   }, []);
 
-  useEffect(() => {
+ useEffect(() => {
   if (!user) return;
   const qRole = query(collection(db, "players"), where("role", "==", role), orderBy("name"));
   const unsub = onSnapshot(qRole, (snap) => {
@@ -46,6 +46,7 @@ export default function Page() {
   });
   return () => unsub();
 }, [user, role]);
+
 
 
   const signIn = async () => { await signInWithPopup(auth, provider); };
@@ -99,16 +100,12 @@ export default function Page() {
         <RoleTabs active={role} onChange={setRole} />
         <div className="relative overflow-hidden rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-slate-900 via-black to-slate-950 shadow-lg">
           <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.04] bg-dots" />
-          <Toolbar
-           
-            queryText={queryText}
-            setQueryText={setQueryText}
-            sortKey={sortKey}
-            setSortKey={setSortKey}
-            onAdd={handleAdd}
-            onReset={handleReset}
-            onUpdateAll={handleUpdateAll}
-          />
+        <Toolbar
+  currentRoleLabel={ROLE_LABELS[role]}
+  queryText={queryText} setQueryText={setQueryText}
+  sortKey={sortKey} setSortKey={setSortKey}
+  onAdd={handleAdd} onReset={handleReset} onUpdateAll={handleUpdateAll}
+/>
           <PlayersTable
             players={filteredSorted}
             onToggle={toggleDay}
