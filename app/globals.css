@@ -1,0 +1,26 @@
+@custom-variant dark (&:where(.dark, .dark *));
+@import "tailwindcss";
+
+html, body { min-height: 100%; }
+
+.bg-dots {
+  background-image: radial-gradient(currentColor 0.6px, transparent 0.6px);
+  background-size: 12px 12px;
+  opacity: .06;
+}
+
+@keyframes star-burn {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 6px rgba(255,220,80,.35));
+  }
+  100% {
+    transform: scale(1.22);
+    filter: drop-shadow(0 0 18px rgba(255,220,80,.85));
+  }
+}
+@keyframes silver-pulse {
+  0%   { transform: scale(1);   filter: drop-shadow(0 0 4px rgba(200,200,200,.35)); }
+  100% { transform: scale(1.03); filter: drop-shadow(0 0 16px rgba(230,230,230,.95)); }
+}
+
