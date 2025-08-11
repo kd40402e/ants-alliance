@@ -15,7 +15,6 @@ import PlayersTable from "@/components/PlayersTable";
 import SummaryCard from "@/components/SummaryCard";
 import useSummary from "@/lib/useSummary";
 import ThemeToggle from "@/components/ThemeToggle";
-import LanguageToggle from "@/components/LanguageToggle";
 import { useLang } from "@/components/LanguageProvider";
 
 export default function Page() {
@@ -90,7 +89,6 @@ export default function Page() {
         <h1 className="text-xl md:text-2xl font-bold text-white">{t.allianceActivity}</h1>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <LanguageToggle />
           <span className="text-sm opacity-70">{user.email}</span>
           <button onClick={signOutNow} className="rounded-xl px-3 py-2 bg-slate-200 dark:bg-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600">{t.signOut}</button>
         </div>

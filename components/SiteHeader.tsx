@@ -9,7 +9,7 @@ export default function SiteHeader() {
       <h1 className="font-cinzel text-4xl md:text-5xl font-extrabold text-yellow-300 drop-shadow-[0_3px_8px_rgba(0,0,0,0.45)]">
         {t.siteTitle}
       </h1>
-      <div className="absolute right-4 top-4">
+      <div className="absolute right-2 top-2">
         <LanguageToggle />
       </div>
     </header>
