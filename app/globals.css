@@ -3,6 +3,10 @@
 
 html, body { min-height: 100%; }
 
+.font-cinzel {
+  font-family: "Cinzel", serif;
+}
+
 .bg-dots {
   background-image: radial-gradient(currentColor 0.6px, transparent 0.6px);
   background-size: 12px 12px;
