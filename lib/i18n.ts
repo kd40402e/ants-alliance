@@ -64,4 +64,5 @@ export const translations = {
     indexAlert: 'Firestore index is required for sorting by name. Open console (F12), click Create index, confirm, wait a minute, and refresh.'
   }
 } as const;
+ main
 export type Translations = (typeof translations)[Lang];
