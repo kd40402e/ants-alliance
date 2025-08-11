@@ -1,6 +1,7 @@
 "use client";
 import clsx from "clsx";
-import { ROLES, ROLE_LABELS, Role } from "@/lib/roles";
+import { ROLES, roleLabel, Role } from "@/lib/roles";
+import { useLang } from "@/components/LanguageProvider";
 
 export default function RoleTabs({
   active,
@@ -9,6 +10,7 @@ export default function RoleTabs({
   active: Role;
   onChange: (role: Role) => void;
 }) {
+  const { lang } = useLang();
   return (
     <div className="flex flex-wrap gap-2 mb-4 pl-[2px]">
       {ROLES.map((r) => {
@@ -25,7 +27,7 @@ export default function RoleTabs({
                 : "bg-slate-700 hover:scale-105 hover:shadow-[0_0_15px_silver]"
             )}
           >
-            {ROLE_LABELS[r]}
+            {roleLabel(r, lang)}
           </button>
         );
 
