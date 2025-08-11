@@ -26,118 +26,193 @@ export default function PlayersTable({
   const totalAll = players.reduce((a, p) => a + Number(p.allTime || 0), 0);
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-100 dark:bg-slate-700 dark:text-white">
-          <tr>
-            <th className="p-2 text-left">{t.player}</th>
-            {dayNames.map((d) => (
-              <th key={d} className="p-2">
-                {d}
-              </th>
+    <div>
+      {/* Версия для больших экранов — таблица */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-100 dark:bg-slate-700 dark:text-white">
+            <tr>
+              <th className="p-2 text-left">{t.player}</th>
+              {dayNames.map((d) => (
+                <th key={d} className="p-2">
+                  {d}
+                </th>
+              ))}
+              <th className="p-2">{t.weekTotal}</th>
+              <th className="p-2">{t.allTotal}</th>
+              <th className="p-2 text-left">{t.note}</th>
+              <th className="p-2">{t.actions}</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {players.map((p) => (
+              <tr
+                key={p.id}
+                className="border-t dark:border-slate-700 transition hover:border-yellow-400 hover:shadow-[0_0_6px_rgba(255,215,0,0.35)]"
+              >
+                {/* Имя */}
+                <td className="p-2">
+                  <input
+                    key={`name-${p.id}-${p.name}`}
+                    defaultValue={p.name}
+                    onBlur={(e) => onNameBlur(p, e.currentTarget.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                    }}
+                    className="w-full rounded-lg border px-2 py-1 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700 focus:outline-none focus:ring focus:ring-emerald-200"
+                  />
+                </td>
+
+                {/* Дни недели */}
+                {dayKeys.map((k) => (
+                  <td key={k} className="p-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={!!p.week[k]}
+                      onChange={() => onToggle(p, k)}
+                      className="h-5 w-5 accent-emerald-600"
+                    />
+                  </td>
+                ))}
+
+                {/* Итого за неделю — прогресс 0..7 */}
+                <td className="p-2">
+                  <div className="h-6 rounded-md bg-emerald-100 dark:bg-emerald-900/30 relative overflow-hidden">
+                    <div
+                      className="absolute inset-y-0 left-0 bg-emerald-500 dark:bg-emerald-400 transition-all"
+                      style={{ width: `${((p.weekTotal || 0) / 7) * 100}%` }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center text-[12px] font-semibold text-slate-900 dark:text-white">
+                      {p.weekTotal || 0}
+                    </div>
+                  </div>
+                </td>
+
+                {/* Всего — центр. число или «горящая» звезда с числом внутри у лидера */}
+                <td className="p-2 text-center">
+                  {Number(p.allTime || 0) === maxAll && maxAll > 0 ? (
+                    <StarBadge value={Number(p.allTime || 0)} />
+                  ) : (
+                    <span className="text-white">{p.allTime ?? 0}</span>
+                  )}
+                </td>
+
+                {/* Заметка */}
+                <td className="p-2">
+                  <input
+                    key={`note-${p.id}-${p.note ?? ""}`}
+                    defaultValue={p.note ?? ""}
+                    placeholder={t.notePlaceholder}
+                    onBlur={(e) => onNoteBlur(p, e.currentTarget.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                    }}
+                    className="w-full rounded-lg border px-2 py-1 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700 focus:outline-none focus:ring focus:ring-emerald-200"
+                  />
+                </td>
+
+                {/* Действия */}
+                <td className="p-2 text-center">
+                  <button
+                    onClick={() => onDelete(p)}
+                    className="rounded-lg px-2 py-1 bg-rose-600 text-white hover:bg-rose-700"
+                  >
+                    {t.delete}
+                  </button>
+                </td>
+              </tr>
             ))}
-            <th className="p-2">{t.weekTotal}</th>
-            <th className="p-2">{t.allTotal}</th>
-            <th className="p-2 text-left">{t.note}</th>
-            <th className="p-2">{t.actions}</th>
-          </tr>
-        </thead>
 
-        <tbody>
-          {players.map((p) => (
-            <tr
-              key={p.id}
-              className="border-t dark:border-slate-700 transition hover:border-yellow-400 hover:shadow-[0_0_6px_rgba(255,215,0,0.35)]"
-            >
-              {/* Имя */}
-              <td className="p-2">
-                <input
-                  key={`name-${p.id}-${p.name}`}
-                  defaultValue={p.name}
-                  onBlur={(e) => onNameBlur(p, e.currentTarget.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                  }}
-                  className="w-full rounded-lg border px-2 py-1 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700 focus:outline-none focus:ring focus:ring-emerald-200"
-                />
+            {/* Строка ИТОГО — центр и белый текст */}
+            <tr className="bg-slate-800">
+              <td colSpan={12} className="p-3 text-center text-white font-bold">
+                {t.totalRow.replace('{week}', String(totalWeek)).replace('{all}', String(totalAll))}
               </td>
+            </tr>
 
-              {/* Дни недели */}
-              {dayKeys.map((k) => (
-                <td key={k} className="p-2 text-center">
+            {players.length === 0 && (
+              <tr>
+                <td colSpan={12} className="p-6 text-center text-slate-500 dark:text-slate-300">
+                  {t.noPlayers}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Версия для мобильных — карточки */}
+      <div className="md:hidden space-y-4">
+        {players.map((p) => (
+          <div
+            key={p.id}
+            className="rounded-lg border border-slate-200 dark:border-slate-700 p-4 bg-white dark:bg-slate-800"
+          >
+            <input
+              key={`m-name-${p.id}-${p.name}`}
+              defaultValue={p.name}
+              onBlur={(e) => onNameBlur(p, e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+              }}
+              className="w-full rounded-lg border px-2 py-1 mb-2 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700 focus:outline-none focus:ring focus:ring-emerald-200"
+            />
+            <div className="flex justify-between mb-2">
+              {dayKeys.map((k, i) => (
+                <label key={k} className="flex flex-col items-center text-xs">
+                  {dayNames[i]}
                   <input
                     type="checkbox"
                     checked={!!p.week[k]}
                     onChange={() => onToggle(p, k)}
-                    className="h-5 w-5 accent-emerald-600"
+                    className="mt-1 h-5 w-5 accent-emerald-600"
                   />
-                </td>
+                </label>
               ))}
-
-              {/* Итого за неделю — прогресс 0..7 */}
-              <td className="p-2">
-                <div className="h-6 rounded-md bg-emerald-100 dark:bg-emerald-900/30 relative overflow-hidden">
-                  <div
-                    className="absolute inset-y-0 left-0 bg-emerald-500 dark:bg-emerald-400 transition-all"
-                    style={{ width: `${((p.weekTotal || 0) / 7) * 100}%` }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center text-[12px] font-semibold text-slate-900 dark:text-white">
-                    {p.weekTotal || 0}
-                  </div>
-                </div>
-              </td>
-
-              {/* Всего — центр. число или «горящая» звезда с числом внутри у лидера */}
-              <td className="p-2 text-center">
+            </div>
+            <div className="flex justify-between text-xs mb-2">
+              <span>
+                {t.weekTotal}: {p.weekTotal || 0}
+              </span>
+              <span className="flex items-center gap-1">
+                {t.allTotal}:{" "}
                 {Number(p.allTime || 0) === maxAll && maxAll > 0 ? (
                   <StarBadge value={Number(p.allTime || 0)} />
                 ) : (
                   <span className="text-white">{p.allTime ?? 0}</span>
                 )}
-              </td>
-
-              {/* Заметка */}
-              <td className="p-2">
-                <input
-                  key={`note-${p.id}-${p.note ?? ""}`}
-                  defaultValue={p.note ?? ""}
-                  placeholder={t.notePlaceholder}
-                  onBlur={(e) => onNoteBlur(p, e.currentTarget.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                  }}
-                  className="w-full rounded-lg border px-2 py-1 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700 focus:outline-none focus:ring focus:ring-emerald-200"
-                />
-              </td>
-
-              {/* Действия */}
-              <td className="p-2 text-center">
-                <button
-                  onClick={() => onDelete(p)}
-                  className="rounded-lg px-2 py-1 bg-rose-600 text-white hover:bg-rose-700"
-                >
-                  {t.delete}
-                </button>
-              </td>
-            </tr>
-          ))}
-
-          {/* Строка ИТОГО — центр и белый текст */}
-          <tr className="bg-slate-800">
-            <td colSpan={12} className="p-3 text-center text-white font-bold">
-              {t.totalRow.replace('{week}', String(totalWeek)).replace('{all}', String(totalAll))}
-            </td>
-          </tr>
-
-          {players.length === 0 && (
-            <tr>
-              <td colSpan={12} className="p-6 text-center text-slate-500 dark:text-slate-300">
-                {t.noPlayers}
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+              </span>
+            </div>
+            <input
+              key={`m-note-${p.id}-${p.note ?? ""}`}
+              defaultValue={p.note ?? ""}
+              placeholder={t.notePlaceholder}
+              onBlur={(e) => onNoteBlur(p, e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+              }}
+              className="w-full rounded-lg border px-2 py-1 mb-2 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700 focus:outline-none focus:ring focus:ring-emerald-200"
+            />
+            <div className="text-right">
+              <button
+                onClick={() => onDelete(p)}
+                className="rounded-lg px-2 py-1 bg-rose-600 text-white hover:bg-rose-700"
+              >
+                {t.delete}
+              </button>
+            </div>
+          </div>
+        ))}
+        {players.length === 0 && (
+          <div className="p-6 text-center text-slate-500 dark:text-slate-300">{t.noPlayers}</div>
+        )}
+        {players.length > 0 && (
+          <div className="p-3 text-center text-white font-bold bg-slate-800 rounded-lg">
+            {t.totalRow.replace('{week}', String(totalWeek)).replace('{all}', String(totalAll))}
+          </div>
+        )}
+      </div>
 
       {/* Глобальные ключевые кадры для «горящей» звезды */}
       <style jsx global>{`
