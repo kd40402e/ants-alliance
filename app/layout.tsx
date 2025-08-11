@@ -1,8 +1,8 @@
 import "./globals.css";
 import ThemeInit from "@/components/ThemeInit";
-import { Cinzel } from "next/font/google";
-
-const cinzel = Cinzel({ subsets: ["latin"], weight: ["700", "800", "900"] });
+import "@fontsource/cinzel/700.css";
+import "@fontsource/cinzel/800.css";
+import "@fontsource/cinzel/900.css";
 
 export const metadata = {
   title: "Инквизиция — Активность альянса",
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Заголовок */}
         <header className="w-full flex justify-center pt-6 md:pt-8 pb-2 md:pb-4">
-          <h1 className={`${cinzel.className} text-4xl md:text-5xl font-extrabold text-yellow-300 drop-shadow-[0_3px_8px_rgba(0,0,0,0.45)]`}>
+          <h1 className="font-cinzel text-4xl md:text-5xl font-extrabold text-yellow-300 drop-shadow-[0_3px_8px_rgba(0,0,0,0.45)]">
             Инквизиция
           </h1>
         </header>
