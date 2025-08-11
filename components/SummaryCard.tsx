@@ -1,8 +1,10 @@
 "use client";
-import { ROLES, ROLE_LABELS, Role } from "@/lib/roles";
+import { ROLES, roleLabel, Role } from "@/lib/roles";
 import type { SummaryMap } from "@/lib/useSummary";
+import { useLang } from "@/components/LanguageProvider";
 
 export default function SummaryCard({ summary }: { summary: SummaryMap }) {
+  const { t, lang } = useLang();
   const rows = ROLES.map((r: Role) => ({ role: r, ...summary[r] }));
   const totalWeek = rows.reduce((a, b) => a + (b.week || 0), 0);
   const totalAll  = rows.reduce((a, b) => a + (b.all  || 0), 0);
@@ -68,25 +70,25 @@ export default function SummaryCard({ summary }: { summary: SummaryMap }) {
       {/* КОНТЕНТ — поверх стекла. Сетка 30% / 40% / 30% сохраняет разрыв по центру */}
       <div className="relative z-10 grid grid-cols-[30%_40%_30%] gap-y-2 px-4 py-3 text-white">
         {/* Заголовок */}
-        <div className="col-start-1 font-semibold">Сводка</div>
+        <div className="col-start-1 font-semibold">{t.summary}</div>
         <div className="col-start-3" />
 
         {/* Строки: слева название роли, справа цифры */}
         {rows.map((r) => (
           <>
             <div key={`${r.role}-l`} className="col-start-1 text-sm font-medium">
-              {ROLE_LABELS[r.role]}
+              {roleLabel(r.role, lang)}
             </div>
             <div key={`${r.role}-r`} className="col-start-3 text-sm tabular-nums text-right">
-              {r.count ?? 0} | неделя: {r.week ?? 0} | всего: {r.all ?? 0}
+              {r.count ?? 0} | {t.week}: {r.week ?? 0} | {t.all}: {r.all ?? 0}
             </div>
           </>
         ))}
 
         {/* ИТОГО — слово слева, суммы справа */}
-        <div className="col-start-1 text-sm font-semibold">ИТОГО</div>
+        <div className="col-start-1 text-sm font-semibold">{t.total}</div>
         <div className="col-start-3 text-sm font-semibold tabular-nums text-right">
-          неделя: {totalWeek} | всего: {totalAll}
+          {t.week}: {totalWeek} | {t.all}: {totalAll}
         </div>
       </div>
     </div>

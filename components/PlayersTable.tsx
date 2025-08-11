@@ -1,8 +1,8 @@
 "use client";
 import type { Player, Week } from "@/lib/types";
+import { useLang } from "@/components/LanguageProvider";
 
 const dayKeys: (keyof Week)[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-const dayNames = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 
 export default function PlayersTable({
   players,
@@ -17,6 +17,9 @@ export default function PlayersTable({
   onNoteBlur: (p: Player, note: string) => void;
   onDelete: (p: Player) => void;
 }) {
+  const { t } = useLang();
+  const dayNames = t.dayShort;
+
   // максимум по «Всего» среди игроков текущей роли
   const maxAll = players.length ? Math.max(...players.map((p) => Number(p.allTime || 0))) : 0;
   const totalWeek = players.reduce((a, p) => a + Number(p.weekTotal || 0), 0);
@@ -27,16 +30,16 @@ export default function PlayersTable({
       <table className="w-full text-sm">
         <thead className="bg-slate-100 dark:bg-slate-700 dark:text-white">
           <tr>
-            <th className="p-2 text-left">Игрок</th>
+            <th className="p-2 text-left">{t.player}</th>
             {dayNames.map((d) => (
               <th key={d} className="p-2">
                 {d}
               </th>
             ))}
-            <th className="p-2">Итого</th>
-            <th className="p-2">Всего</th>
-            <th className="p-2 text-left">Заметка</th>
-            <th className="p-2">Действия</th>
+            <th className="p-2">{t.weekTotal}</th>
+            <th className="p-2">{t.allTotal}</th>
+            <th className="p-2 text-left">{t.note}</th>
+            <th className="p-2">{t.actions}</th>
           </tr>
         </thead>
 
@@ -98,7 +101,7 @@ export default function PlayersTable({
                 <input
                   key={`note-${p.id}-${p.note ?? ""}`}
                   defaultValue={p.note ?? ""}
-                  placeholder="Заметка…"
+                  placeholder={t.notePlaceholder}
                   onBlur={(e) => onNoteBlur(p, e.currentTarget.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") (e.target as HTMLInputElement).blur();
@@ -113,7 +116,7 @@ export default function PlayersTable({
                   onClick={() => onDelete(p)}
                   className="rounded-lg px-2 py-1 bg-rose-600 text-white hover:bg-rose-700"
                 >
-                  Удалить
+                  {t.delete}
                 </button>
               </td>
             </tr>
@@ -122,14 +125,14 @@ export default function PlayersTable({
           {/* Строка ИТОГО — центр и белый текст */}
           <tr className="bg-slate-800">
             <td colSpan={12} className="p-3 text-center text-white font-bold">
-              ИТОГО: неделя {totalWeek} | всего {totalAll}
+              {t.totalRow.replace('{week}', String(totalWeek)).replace('{all}', String(totalAll))}
             </td>
           </tr>
 
           {players.length === 0 && (
             <tr>
               <td colSpan={12} className="p-6 text-center text-slate-500 dark:text-slate-300">
-                Нет игроков. Нажми «Добавить игрока»
+                {t.noPlayers}
               </td>
             </tr>
           )}

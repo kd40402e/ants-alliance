@@ -3,13 +3,28 @@ export type Role = "P5" | "P4" | "P3" | "P2" | "P1";
 
 export const ROLES: Role[] = ["P5", "P4", "P3", "P2", "P1"];
 
-export const ROLE_LABELS: Record<Role, string> = {
-  P5: "Патриарх",
-  P4: "Кардиналы",
-  P3: "Инквизиторы",
-  P2: "Аколиты",
-  P1: "Подвал",
+import type { Lang } from "./i18n";
+
+export const ROLE_LABELS: Record<Lang, Record<Role, string>> = {
+  ru: {
+    P5: "Патриарх",
+    P4: "Кардиналы",
+    P3: "Инквизиторы",
+    P2: "Аколиты",
+    P1: "Подвал",
+  },
+  en: {
+    P5: "Patriarch",
+    P4: "Cardinals",
+    P3: "Inquisitors",
+    P2: "Acolytes",
+    P1: "Basement",
+  },
 };
+
+export function roleLabel(role: Role, lang: Lang) {
+  return ROLE_LABELS[lang][role];
+}
 
 
 // 3) Узкое «as const»-представление всего набора (если нужно)
