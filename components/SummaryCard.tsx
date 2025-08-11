@@ -10,13 +10,13 @@ export default function SummaryCard({ summary }: { summary: SummaryMap }) {
   const totalAll  = rows.reduce((a, b) => a + (b.all  || 0), 0);
 
   return (
-    <div className="relative rounded-2xl">
+    <div className="relative rounded-2xl overflow-hidden">
       {/* ДВА ОСКОЛКА — рисуем абсолютными слоями, чтобы всегда иметь высоту */}
-      {/* Левый осколок (30%) */}
+      {/* Левый осколок */}
       <div
         aria-hidden
         className="
-          pointer-events-none absolute inset-y-0 left-0 w-[30%] z-0
+          pointer-events-none absolute inset-y-0 left-0 w-1/2 sm:w-[30%] z-0
           bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950
           backdrop-blur-md shadow-[inset_0_0_40px_rgba(255,255,255,0.08)]
           rounded-l-2xl
@@ -39,11 +39,11 @@ export default function SummaryCard({ summary }: { summary: SummaryMap }) {
           `,
         }}
       />
-      {/* Правый осколок (30%) */}
+      {/* Правый осколок */}
       <div
         aria-hidden
         className="
-          pointer-events-none absolute inset-y-0 right-0 w-[30%] z-0
+          pointer-events-none absolute inset-y-0 right-0 w-1/2 sm:w-[30%] z-0
           bg-gradient-to-bl from-slate-950 via-slate-900 to-blue-950
           backdrop-blur-md shadow-[inset_0_0_40px_rgba(255,255,255,0.08)]
           rounded-r-2xl
@@ -67,11 +67,11 @@ export default function SummaryCard({ summary }: { summary: SummaryMap }) {
         }}
       />
 
-      {/* КОНТЕНТ — поверх стекла. Сетка 30% / 40% / 30% сохраняет разрыв по центру */}
-      <div className="relative z-10 grid grid-cols-[30%_40%_30%] gap-y-2 px-4 py-3 text-white">
+      {/* КОНТЕНТ — поверх стекла. На мобильных 2 колонки 50/50, на больших 30/40/30 */}
+      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-[30%_40%_30%] gap-y-2 px-4 py-3 text-white">
         {/* Заголовок */}
         <div className="col-start-1 font-semibold">{t.summary}</div>
-        <div className="col-start-3" />
+        <div className="col-start-2 sm:col-start-3" />
 
         {/* Строки: слева название роли, справа цифры */}
         {rows.map((r) => (
@@ -79,7 +79,10 @@ export default function SummaryCard({ summary }: { summary: SummaryMap }) {
             <div key={`${r.role}-l`} className="col-start-1 text-sm font-medium">
               {roleLabel(r.role, lang)}
             </div>
-            <div key={`${r.role}-r`} className="col-start-3 text-sm tabular-nums text-right">
+            <div
+              key={`${r.role}-r`}
+              className="col-start-2 sm:col-start-3 text-sm tabular-nums text-right"
+            >
               {r.count ?? 0} | {t.week}: {r.week ?? 0} | {t.all}: {r.all ?? 0}
             </div>
           </>
@@ -87,7 +90,7 @@ export default function SummaryCard({ summary }: { summary: SummaryMap }) {
 
         {/* ИТОГО — слово слева, суммы справа */}
         <div className="col-start-1 text-sm font-semibold">{t.total}</div>
-        <div className="col-start-3 text-sm font-semibold tabular-nums text-right">
+        <div className="col-start-2 sm:col-start-3 text-sm font-semibold tabular-nums text-right">
           {t.week}: {totalWeek} | {t.all}: {totalAll}
         </div>
       </div>
