@@ -8,15 +8,17 @@ import {
 } from "firebase/firestore";
 
 import type { Player, Week } from "@/lib/types";
-import { Role, ROLE_LABELS } from "@/lib/roles";
+import { Role, roleLabel } from "@/lib/roles";
 import RoleTabs from "@/components/RoleTabs";
 import Toolbar from "@/components/Toolbar";
 import PlayersTable from "@/components/PlayersTable";
 import SummaryCard from "@/components/SummaryCard";
 import useSummary from "@/lib/useSummary";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useLang } from "@/components/LanguageProvider";
 
 export default function Page() {
+  const { t, lang } = useLang();
   const [user, setUser] = useState(auth.currentUser);
   const [role, setRole] = useState<Role>("P3");
   const [players, setPlayers] = useState<Player[]>([]);
@@ -40,12 +42,12 @@ export default function Page() {
       arr.push({ id: d.id, ...data });
     });
     setPlayers(arr);
-  }, (err) => {
-    console.error("onSnapshot(role) error:", err);
-    alert("Нужен Firestore index для сортировки по имени. Открой консоль (F12), нажми Create index, подтверди, подожди минуту и обнови.");
-  });
-  return () => unsub();
-}, [user, role]);
+    }, (err) => {
+      console.error("onSnapshot(role) error:", err);
+      alert(t.indexAlert);
+    });
+    return () => unsub();
+  }, [user, role, t.indexAlert]);
 
 
 
@@ -61,21 +63,21 @@ export default function Page() {
         (p.note || "").toLowerCase().includes(q)
       );
     }
-    const byName = (a: Player, b: Player) => (a.name || "").localeCompare(b.name || "", "ru");
+    const byName = (a: Player, b: Player) => (a.name || "").localeCompare(b.name || "", lang);
     const byWeek = (a: Player, b: Player) => (b.weekTotal || 0) - (a.weekTotal || 0) || byName(a, b);
     const byAll = (a: Player, b: Player) => (b.allTime || 0) - (a.allTime || 0) || byName(a, b);
 
     if (sortKey === "name_az") return [...list].sort(byName);
     if (sortKey === "week_desc") return [...list].sort(byWeek);
     return [...list].sort(byAll);
-  }, [players, queryText, sortKey]);
+  }, [players, queryText, sortKey, lang]);
 
   if (!user) {
     return (
       <main className="mx-auto max-w-5xl p-4 md:p-6 min-h-screen">
         <div className="rounded-2xl border bg-white dark:bg-slate-800 dark:border-slate-700 shadow p-8 text-center">
-          <h1 className="text-xl md:text-2xl font-bold text-white">Активность альянса</h1>
-          <button onClick={signIn} className="px-5 py-3 rounded-xl bg-black text-white hover:opacity-90">Войти через Google</button>
+          <h1 className="text-xl md:text-2xl font-bold text-white">{t.allianceActivity}</h1>
+          <button onClick={signIn} className="px-5 py-3 rounded-xl bg-black text-white hover:opacity-90">{t.signIn}</button>
         </div>
       </main>
     );
@@ -84,11 +86,11 @@ export default function Page() {
   return (
     <main className="mx-auto max-w-6xl p-4 md:p-6 min-h-screen">
       <header className="flex items-center justify-between mb-4">
-        <h1 className="text-xl md:text-2xl font-bold text-white">Активность альянса</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-white">{t.allianceActivity}</h1>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <span className="text-sm opacity-70">{user.email}</span>
-          <button onClick={signOutNow} className="rounded-xl px-3 py-2 bg-slate-200 dark:bg-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600">Выйти</button>
+          <button onClick={signOutNow} className="rounded-xl px-3 py-2 bg-slate-200 dark:bg-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600">{t.signOut}</button>
         </div>
       </header>
 
@@ -101,7 +103,7 @@ export default function Page() {
         <div className="relative overflow-hidden rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-slate-900 via-black to-slate-950 shadow-lg">
           <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.04] bg-dots" />
         <Toolbar
-  currentRoleLabel={ROLE_LABELS[role]}
+  currentRoleLabel={roleLabel(role, lang)}
   queryText={queryText} setQueryText={setQueryText}
   sortKey={sortKey} setSortKey={setSortKey}
   onAdd={handleAdd} onReset={handleReset} onUpdateAll={handleUpdateAll}
@@ -121,7 +123,7 @@ export default function Page() {
   async function handleAdd() {
     const base: Week = resetWeek();
     await addDoc(collection(db, "players"), {
-      name: `Игрок ${Math.random().toString(36).slice(2, 6)}`,
+      name: `${lang === 'ru' ? 'Игрок' : 'Player'} ${Math.random().toString(36).slice(2, 6)}`,
       role, week: base, weekTotal: 0, allTime: 0, note: "",
       updatedAt: Date.now()
     });
@@ -157,7 +159,7 @@ export default function Page() {
     await updateDoc(doc(db, "players", p.id), { note: v, updatedAt: Date.now() });
   }
   async function deletePlayer(p: Player) {
-    if (!confirm(`Удалить игрока "${p.name}"?`)) return;
+    if (!confirm(lang === 'ru' ? `Удалить игрока "${p.name}"?` : `Delete player "${p.name}"?`)) return;
     await deleteDoc(doc(db, "players", p.id));
   }
 }
