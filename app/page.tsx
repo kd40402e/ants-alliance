@@ -26,6 +26,7 @@ export default function Page() {
   const [sortKey, setSortKey] = useState<"name_az" | "week_desc" | "all_desc">("name_az");
 
   const summary = useSummary(!!user);
+  const signOutClasses = lang === "en" ? "px-2 py-1 text-xs" : "px-3 py-2";
 
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged(setUser);
@@ -90,7 +91,12 @@ export default function Page() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <span className="text-sm opacity-70">{user.email}</span>
-          <button onClick={signOutNow} className="rounded-xl px-3 py-2 bg-slate-200 dark:bg-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600">{t.signOut}</button>
+          <button
+            onClick={signOutNow}
+            className={`rounded-xl ${signOutClasses} bg-slate-200 dark:bg-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600`}
+          >
+            {t.signOut}
+          </button>
         </div>
       </header>
 

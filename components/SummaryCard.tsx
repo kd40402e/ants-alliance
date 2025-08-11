@@ -5,6 +5,7 @@ import { useLang } from "@/components/LanguageProvider";
 
 export default function SummaryCard({ summary }: { summary: SummaryMap }) {
   const { t, lang } = useLang();
+  const textSize = lang === "ru" ? "text-xs" : "text-sm";
   const rows = ROLES.map((r: Role) => ({ role: r, ...summary[r] }));
   const totalWeek = rows.reduce((a, b) => a + (b.week || 0), 0);
   const totalAll  = rows.reduce((a, b) => a + (b.all  || 0), 0);
@@ -70,18 +71,18 @@ export default function SummaryCard({ summary }: { summary: SummaryMap }) {
       {/* КОНТЕНТ — поверх стекла. На мобильных 2 колонки 50/50, на больших 30/40/30 */}
       <div className="relative z-10 grid grid-cols-2 sm:grid-cols-[30%_40%_30%] gap-y-2 px-4 py-3 text-white">
         {/* Заголовок */}
-        <div className="col-start-1 font-semibold">{t.summary}</div>
+        <div className={`col-start-1 font-semibold ${lang === "ru" ? "text-xs" : ""}`}>{t.summary}</div>
         <div className="col-start-2 sm:col-start-3" />
 
         {/* Строки: слева название роли, справа цифры */}
         {rows.map((r) => (
           <>
-            <div key={`${r.role}-l`} className="col-start-1 text-sm font-medium">
+            <div key={`${r.role}-l`} className={`col-start-1 ${textSize} font-medium`}>
               {roleLabel(r.role, lang)}
             </div>
             <div
               key={`${r.role}-r`}
-              className="col-start-2 sm:col-start-3 text-sm tabular-nums text-right"
+              className={`col-start-2 sm:col-start-3 ${textSize} tabular-nums text-right`}
             >
               {r.count ?? 0} | {t.week}: {r.week ?? 0} | {t.all}: {r.all ?? 0}
             </div>
@@ -89,8 +90,8 @@ export default function SummaryCard({ summary }: { summary: SummaryMap }) {
         ))}
 
         {/* ИТОГО — слово слева, суммы справа */}
-        <div className="col-start-1 text-sm font-semibold">{t.total}</div>
-        <div className="col-start-2 sm:col-start-3 text-sm font-semibold tabular-nums text-right">
+        <div className={`col-start-1 ${textSize} font-semibold`}>{t.total}</div>
+        <div className={`col-start-2 sm:col-start-3 ${textSize} font-semibold tabular-nums text-right`}>
           {t.week}: {totalWeek} | {t.all}: {totalAll}
         </div>
       </div>
