@@ -1,5 +1,6 @@
 "use client";
 import type { Player, Week } from "@/lib/types";
+import { ROLES } from "@/lib/roles";
 import { useLang } from "@/components/LanguageProvider";
 
 const dayKeys: (keyof Week)[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
@@ -10,12 +11,16 @@ export default function PlayersTable({
   onNameBlur,
   onNoteBlur,
   onDelete,
+  onPromote,
+  onDemote,
 }: {
   players: Player[];
   onToggle: (p: Player, k: keyof Week) => void;
   onNameBlur: (p: Player, name: string) => void;
   onNoteBlur: (p: Player, note: string) => void;
   onDelete: (p: Player) => void;
+  onPromote: (p: Player) => void;
+  onDemote: (p: Player) => void;
 }) {
   const { t } = useLang();
   const dayNames = t.dayShort;
@@ -114,12 +119,30 @@ export default function PlayersTable({
 
                 {/* Действия */}
                 <td className="p-2 text-center">
-                  <button
-                    onClick={() => onDelete(p)}
-                    className="rounded-lg px-2 py-1 bg-rose-600 text-white hover:bg-rose-700"
-                  >
-                    {t.delete}
-                  </button>
+                  <div className="flex items-center justify-center gap-1">
+                    <button
+                      title={t.promote}
+                      onClick={() => onPromote(p)}
+                      disabled={ROLES.indexOf(p.role) === 0}
+                      className="rounded-lg px-2 py-1 bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      title={t.demote}
+                      onClick={() => onDemote(p)}
+                      disabled={ROLES.indexOf(p.role) === ROLES.length - 1}
+                      className="rounded-lg px-2 py-1 bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      onClick={() => onDelete(p)}
+                      className="rounded-lg px-2 py-1 bg-rose-600 text-white hover:bg-rose-700"
+                    >
+                      {t.delete}
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -194,7 +217,23 @@ export default function PlayersTable({
               }}
               className="w-full rounded-lg border px-2 py-1 mb-2 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700 focus:outline-none focus:ring focus:ring-emerald-200"
             />
-            <div className="text-right">
+            <div className="flex justify-end gap-2">
+              <button
+                title={t.promote}
+                onClick={() => onPromote(p)}
+                disabled={ROLES.indexOf(p.role) === 0}
+                className="rounded-lg px-2 py-1 bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
+              >
+                ↑
+              </button>
+              <button
+                title={t.demote}
+                onClick={() => onDemote(p)}
+                disabled={ROLES.indexOf(p.role) === ROLES.length - 1}
+                className="rounded-lg px-2 py-1 bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50"
+              >
+                ↓
+              </button>
               <button
                 onClick={() => onDelete(p)}
                 className="rounded-lg px-2 py-1 bg-rose-600 text-white hover:bg-rose-700"

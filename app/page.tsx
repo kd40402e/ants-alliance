@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 
 import type { Player, Week } from "@/lib/types";
-import { Role, roleLabel } from "@/lib/roles";
+import { Role, roleLabel, ROLES } from "@/lib/roles";
 import RoleTabs from "@/components/RoleTabs";
 import Toolbar from "@/components/Toolbar";
 import PlayersTable from "@/components/PlayersTable";
@@ -120,6 +120,8 @@ export default function Page() {
             onNameBlur={updateName}
             onNoteBlur={updateNote}
             onDelete={deletePlayer}
+            onPromote={promotePlayer}
+            onDemote={demotePlayer}
           />
         </div>
       </section>
@@ -167,6 +169,19 @@ export default function Page() {
   async function deletePlayer(p: Player) {
     if (!confirm(lang === 'ru' ? `Удалить игрока "${p.name}"?` : `Delete player "${p.name}"?`)) return;
     await deleteDoc(doc(db, "players", p.id));
+  }
+
+  async function promotePlayer(p: Player) {
+    const idx = ROLES.indexOf(p.role);
+    if (idx <= 0) return;
+    const newRole = ROLES[idx - 1];
+    await updateDoc(doc(db, "players", p.id), { role: newRole, updatedAt: Date.now() });
+  }
+  async function demotePlayer(p: Player) {
+    const idx = ROLES.indexOf(p.role);
+    if (idx === ROLES.length - 1) return;
+    const newRole = ROLES[idx + 1];
+    await updateDoc(doc(db, "players", p.id), { role: newRole, updatedAt: Date.now() });
   }
 }
 
